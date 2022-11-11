@@ -3,20 +3,8 @@ use leptos::*;
 
 // boilerplate to run in different modes
 cfg_if! {
-    // client-only stuff for Trunk
-    if #[cfg(feature = "csr")] {
-        pub fn main() {
-            console_error_panic_hook::set_once();
-            _ = console_log::init_with_level(log::Level::Debug);
-            console_error_panic_hook::set_once();
-            mount_to_body(|cx| {
-                view! { cx, <App/> }
-            });
-        }
-    }
-
     // server-only stuff
-    else if #[cfg(feature = "ssr")] {
+    if #[cfg(feature = "ssr")] {
         use actix_files::{Files, NamedFile};
         use actix_web::*;
         use futures::StreamExt;
@@ -105,6 +93,19 @@ cfg_if! {
             //.bind_openssl(&format!("{}:{}", host, port), builder)?
             .run()
             .await
+        }
+    }
+    // client-only stuff for Trunk
+    else if #[cfg(feature = "csr")] {
+        use leptos_sfa::*;
+
+        pub fn main() {
+            console_error_panic_hook::set_once();
+            _ = console_log::init_with_level(log::Level::Debug);
+            console_error_panic_hook::set_once();
+            mount_to_body(|cx| {
+                view! { cx, <App/> }
+            });
         }
     }
 }
